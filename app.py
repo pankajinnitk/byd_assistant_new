@@ -34,7 +34,7 @@ def processRequest(req):
     baseurl = "https://my316075.sapbydesign.com/sap/byd/odata/cust/v1/purchasing/"
     session.headers.update({'authorization' : "Basic " + base64.encodestring(('%s:%s' % ("odata_demo", "Welcome01")).encode()).decode().replace('\n', '')})
     session.headers.update({'x-csrf-token' : 'fetch'})
-    res = session.get(baseurl , data = {'user' :'odata_demo','password' : 'Welcome01'}, proxies = "")
+    res = session.get(baseurl)# , data = {'user' :'odata_demo','password' : 'Welcome01'}, proxies = "")
     session.headers.update({'x-csrf-token' : res.headers.get("x-csrf-token")})
 
     method, query = makeQuery(req, baseurl, session)
