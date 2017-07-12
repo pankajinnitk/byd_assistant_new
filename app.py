@@ -34,7 +34,9 @@ def processRequest(req):
     baseurl = "https://my316075.sapbydesign.com/sap/byd/odata/cust/v1/purchasing/"
     session.headers.update({'authorization' : "Basic " + base64.encodestring(('%s:%s' % ("odata_demo", "Welcome01")).encode()).decode().replace('\n', '')})
     session.headers.update({'x-csrf-token' : 'fetch'})
+    print(session)
     res = session.get(baseurl, data = {'user' :'odata_demo','password' : 'Welcome01'}, proxies = "")
+    print(res)
     session.headers.update({'x-csrf-token' : res.headers.get("x-csrf-token")})
 
     method, query = makeQuery(req, baseurl, session)
@@ -65,9 +67,11 @@ def makeQuery(req, baseurl, session):
     elif intent == "find-count":
         return "get" , "PurchaseOrderCollection/$count?%24filter=PurchaseOrderLifeCycleStatusCodeText%20eq%20'" + status + "'"
     elif intent == "po-action":
-        qry_url = baseurl + "PurchaseOrderCollection/?%24filter=PurchaseOrderID%20eq%20'" + poid + "'&%24format=json"         
+        qry_url = baseurl + "PurchaseOrderCollection/?%24filter=PurchaseOrderID%20eq%20'" + poid + "'&%24format=json" 
+        print(qry_url)
         res = session.get(qry_url)
         result = res.text
+        print(result)
         data = json.loads(result)
         node_id = data.get('d').get('results')[0].get('ObjectID')
         return "post" , action + "?" + "ObjectID='" + node_id +"'" + "'&%24format=json"
