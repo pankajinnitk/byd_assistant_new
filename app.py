@@ -115,7 +115,7 @@ def makeWebhookResult(data, req):
         "displayText": speech,
         # "data": data,
         #"contextOut": node_id,
-        "source": "byd-assistant"
+        "source": "bydassistant"
     }
 
 
