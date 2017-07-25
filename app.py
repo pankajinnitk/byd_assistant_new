@@ -62,7 +62,7 @@ def makeQuery(req, baseurl, session):
     action = parameters.get("po-action")
 	
     intent = result.get("action")    
-    if intent == "find-status":
+    if intent == "find-status" or intent == "po-details":
         return "get" , "PurchaseOrderCollection/?%24filter=PurchaseOrderID%20eq%20'" + poid + "'&%24format=json" 
     elif intent == "find-count":
         return "get" , "PurchaseOrderCollection/$count?%24filter=PurchaseOrderLifeCycleStatusCodeText%20eq%20'" + status + "'"
@@ -89,6 +89,47 @@ def makeWebhookResult(data, req):
         speech = "The status of Purchase Order ID " + str(value[0].get('PurchaseOrderID')) + \
              	 " is " + value[0].get('PurchaseOrderLifeCycleStatusCodeText')
     
+    elif intent == "po-details":		
+        value = data.get('d').get('results')
+        node_id = value[0].get('ObjectID')
+        print(node_id)
+        print("json.results: ")
+        print(json.dumps(value, indent=4))
+        speech = "Here are the details"
+        message = {
+                        "optionInfo": {
+                            "key": "Supplier",
+                            "synonyms": [
+                                "seller"
+                            ]
+                        },
+                        "title": "Supplier",
+                        "description": value[0].get('SellerPartyID'),
+                        "image": { }
+                    },
+                    {
+                        "optionInfo": {
+                            "key": "Value",
+                            "synonyms": [
+                                "amount"
+                            ]
+                        },
+                        "title": "Net Value",
+                        "description": value[0].get('TotalNetAmount') + value[0].get('CurrencyCodeText'),
+                        "image": { }
+                    },
+                    {
+                        "optionInfo": {
+                            "key": "Buyer",
+                            "synonyms": [
+                                "buyer"
+                            ]
+                        },
+                        "title": "Buyer Party",
+                        "description": value[0].get('BuyerPartyID'),
+                        "image": { }
+                    }
+            
     elif intent == "find-count":        
         if int(data) > 1:
             speech = "There are " + str(data) + " purchase orders in the system with " + \
@@ -113,7 +154,7 @@ def makeWebhookResult(data, req):
     return {
         "speech": speech,
         "displayText": speech,
-        # "data": data,
+        "data": [ message ],
         #"contextOut": node_id,
         "source": "bydassistant"
     }
