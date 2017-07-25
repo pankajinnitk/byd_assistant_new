@@ -154,7 +154,7 @@ def makeWebhookResult(data, req):
     return {
         "speech": speech,
         "displayText": speech,
-        "message": [
+        "messages": [
             {
               "type": "link_out_chip",
               "platform": "google",
