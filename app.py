@@ -96,39 +96,43 @@ def makeWebhookResult(data, req):
         print("json.results: ")
         print(json.dumps(value, indent=4))
         speech = "Here are the details"
-        message.append( {
-                        "optionInfo": {
-                            "key": "Supplier",
-                            "synonyms": [
-                                "seller"
-                            ]
-                        },
-                        "title": "Supplier",
-                        "description": value[0].get('SellerPartyID'),
-                        "image": { }
+        messages.append( {
+                "type": "list_card",
+                "platform": "google",
+                "title": "Details of PO " + value[0].get('PurchaseOrderID'),
+                "items": [
+                {
+                    "optionInfo": {
+                    "key": "Supplier",
+                    "synonyms": ["Seller"]
                     },
-                    {
-                        "optionInfo": {
-                            "key": "Value",
-                            "synonyms": [
-                                "amount"
-                            ]
-                        },
-                        "title": "Net Value",
-                        "description": value[0].get('TotalNetAmount') + value[0].get('CurrencyCodeText'),
-                        "image": { }
+                    "title": "Supplier"
+                    "description": value[0].get('SellerPartyID')
+                },
+                {
+                    "optionInfo": {
+                    "key": "amount",
+                    "synonyms": ["Value"]
                     },
-                    {
-                        "optionInfo": {
-                            "key": "Buyer",
-                            "synonyms": [
-                                "buyer"
-                            ]
-                        },
-                        "title": "Buyer Party",
-                        "description": value[0].get('BuyerPartyID'),
-                        "image": { }
-                    } )
+                    "title": "Net Value",
+                    "description": value[0].get('TotalNetAmount') + value[0].get('CurrencyCodeText')
+                },
+                {
+                    "optionInfo": {
+                    "key": "Buyer",
+                    "synonyms": ["Company"]
+                    },
+                    "title": "Buyer Party",
+                    "description": value[0].get('BuyerPartyID')
+                }
+                ]
+            } )
+        messages.append( {
+              "type": 0,
+              "speech": "Supplier of PO " + value[0].get('PurchaseOrderID') + "is" +  value[0].get('SellerPartyID') + "." + \
+                         "Total Net Value is " + value[0].get('TotalNetAmount') + value[0].get('CurrencyCodeText') + "." + \
+                         "Buyer Party is " + value[0].get('BuyerPartyID') + "."
+            } )
             
     elif intent == "find-count":        
         if int(data) > 1:
@@ -154,29 +158,7 @@ def makeWebhookResult(data, req):
     return {
         "speech": speech,
         "displayText": speech,
-        "messages": [
-            {
-                "type": "list_card",
-                "platform": "google",
-                "title": "PO Details",
-                "items": [
-                {
-                    "optionInfo": {
-                    "key": "<Name>",
-                    "synonyms": []
-                    },
-                    "title": "Supplier"
-                },
-                {
-                    "optionInfo": {
-                    "key": "<amount>",
-                    "synonyms": []
-                    },
-                    "title": "Amount"
-                }
-                ]
-            }
-        ],
+        "messages": messages,
         #"contextOut": node_id,
         "source": "bydassistant"
     }
