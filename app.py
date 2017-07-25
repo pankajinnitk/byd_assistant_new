@@ -79,7 +79,7 @@ def makeQuery(req, baseurl, session):
         return {}
 	
 def makeWebhookResult(data, req):
-	messages = []
+    messages = []
     intent = req.get("result").get("action")    
     if intent == "find-status":		
         value = data.get('d').get('results')
