@@ -79,7 +79,7 @@ def makeQuery(req, baseurl, session):
         return {}
 	
 def makeWebhookResult(data, req):
-    messages = [""]
+    messages = []
     intent = req.get("result").get("action")    
     if intent == "find-status":		
         value = data.get('d').get('results')
@@ -175,7 +175,7 @@ def makeWebhookResult(data, req):
     return {
         "speech": speech,
         "displayText": speech,
-        "messages": [ messages ],
+        "messages": messages,
         #"contextOut": node_id,
         "source": "bydassistant"
     }
