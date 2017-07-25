@@ -134,7 +134,7 @@ def makeWebhookResult(data, req):
             } )
         messages.append( {
               "type": 0,
-              "speech": "Supplier of PO " + value[0].get('PurchaseOrderID') + "is" +  value[0].get('SellerPartyID') + ". " + \
+              "speech": "Supplier of PO " + value[0].get('PurchaseOrderID') + " is " +  value[0].get('SellerPartyID') + ". " + \
                          "Total Net Value is " + value[0].get('TotalNetAmount') + " " + value[0].get('CurrencyCodeText') + ". " + \
                          "Buyer Party is " + value[0].get('BuyerPartyID') + "."
             } )
