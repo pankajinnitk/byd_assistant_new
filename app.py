@@ -154,7 +154,14 @@ def makeWebhookResult(data, req):
     return {
         "speech": speech,
         "displayText": speech,
-        "data": message,
+        "message": [
+            {
+              "type": "link_out_chip",
+              "platform": "google",
+              "destinationName": "Google",
+              "url": "www.google.com"
+            }
+        ],
         #"contextOut": node_id,
         "source": "bydassistant"
     }
