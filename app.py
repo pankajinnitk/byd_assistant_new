@@ -158,7 +158,7 @@ def makeWebhookResult(data, req):
     return {
         "speech": speech,
         "displayText": speech,
-        "messages": messages,
+        "messages": [ messages ],
         #"contextOut": node_id,
         "source": "bydassistant"
     }
