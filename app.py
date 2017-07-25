@@ -96,7 +96,7 @@ def makeWebhookResult(data, req):
         print("json.results: ")
         print(json.dumps(value, indent=4))
         speech = "Here are the details"
-        message = {
+        message.append( {
                         "optionInfo": {
                             "key": "Supplier",
                             "synonyms": [
@@ -128,7 +128,7 @@ def makeWebhookResult(data, req):
                         "title": "Buyer Party",
                         "description": value[0].get('BuyerPartyID'),
                         "image": { }
-                    }
+                    } )
             
     elif intent == "find-count":        
         if int(data) > 1:
