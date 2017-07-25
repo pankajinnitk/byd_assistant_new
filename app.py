@@ -155,26 +155,27 @@ def makeWebhookResult(data, req):
         "speech": speech,
         "displayText": speech,
         "messages": [
-             {
-              "type": "list_card",
-              "platform": "google",
-              "title": "PO Details",
-              "items": [
+            {
+                "type": "list_card",
+                "platform": "google",
+                "title": "PO Details",
+                "items": [
                 {
-                  "optionInfo": {
+                    "optionInfo": {
                     "key": "<Name>",
                     "synonyms": []
-                  },
-                  "title": "Supplier"
+                    },
+                    "title": "Supplier"
                 },
                 {
-                  "optionInfo": {
+                    "optionInfo": {
                     "key": "<amount>",
                     "synonyms": []
-                  },
-                  "title": "Amount"
+                    },
+                    "title": "Amount"
                 }
-             }
+                ]
+            }
         ],
         #"contextOut": node_id,
         "source": "bydassistant"
