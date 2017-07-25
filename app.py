@@ -155,11 +155,23 @@ def makeWebhookResult(data, req):
         "speech": speech,
         "displayText": speech,
         "messages": [
+          "type": "list_card",
+          "platform": "google",
+          "title": "PO Details",
+          "items": [
             {
-              "type": "link_out_chip",
-              "platform": "google",
-              "destinationName": "Google",
-              "url": "www.google.com"
+              "optionInfo": {
+                "key": "<Name>",
+                "synonyms": []
+              },
+              "title": "Supplier"
+            },
+            {
+              "optionInfo": {
+                "key": "<amount>",
+                "synonyms": []
+              },
+              "title": "Amount"
             }
         ],
         #"contextOut": node_id,
