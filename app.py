@@ -94,7 +94,7 @@ def makeWebhookResult(data, req):
               "speech": speech
             } )
 
-    elif intent == "po-details":		
+    elif intent == "get-details":		
         value = data.get('d').get('results')
         node_id = value[0].get('ObjectID')
         print(node_id)
