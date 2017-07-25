@@ -106,7 +106,7 @@ def makeWebhookResult(data, req):
                     "key": "Supplier",
                     "synonyms": ["Seller"]
                     },
-                    "title": "Supplier"
+                    "title": "Supplier",
                     "description": value[0].get('SellerPartyID')
                 },
                 {
