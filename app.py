@@ -164,11 +164,11 @@ def makeWebhookResult(data, req):
             } )
     else:
         speech = "Sorry, I did not understand you! Please try again"
-	    messages.append( {
+        messages.append( {
               "type": 0,
               "speech": speech
             } )
-        
+    
     print("Response:")
     print(speech)
 
