@@ -89,7 +89,11 @@ def makeWebhookResult(data, req):
         print(json.dumps(value, indent=4))
         speech = "The status of Purchase Order ID " + str(value[0].get('PurchaseOrderID')) + \
              	 " is " + value[0].get('PurchaseOrderLifeCycleStatusCodeText')
-    
+        messages.append( {
+              "type": 0,
+              "speech": speech
+            } )
+
     elif intent == "po-details":		
         value = data.get('d').get('results')
         node_id = value[0].get('ObjectID')
@@ -130,12 +134,12 @@ def makeWebhookResult(data, req):
             } )
         messages.append( {
               "type": 0,
-              "speech": "Supplier of PO " + value[0].get('PurchaseOrderID') + "is" +  value[0].get('SellerPartyID') + "." + \
-                         "Total Net Value is " + value[0].get('TotalNetAmount') + value[0].get('CurrencyCodeText') + "." + \
+              "speech": "Supplier of PO " + value[0].get('PurchaseOrderID') + "is" +  value[0].get('SellerPartyID') + ". " + \
+                         "Total Net Value is " + value[0].get('TotalNetAmount') + " " + value[0].get('CurrencyCodeText') + ". " + \
                          "Buyer Party is " + value[0].get('BuyerPartyID') + "."
             } )
             
-    elif intent == "find-count":        
+    elif intent == "find-count":
         if int(data) > 1:
             speech = "There are " + str(data) + " purchase orders in the system with " + \
                       req.get("result").get("parameters").get("status") + " status"
@@ -145,14 +149,26 @@ def makeWebhookResult(data, req):
         else:
             speech = "There are no purchase orders in the system with " + \
                       req.get("result").get("parameters").get("status") + " status"
+        messages.append( {
+              "type": 0,
+              "speech": speech
+            } )
     elif intent == "po-action":
         value = data.get('d').get('results')
         node_id = value.get('ObjectID')
         speech = "The status of Purchase Order ID " + str(value.get('PurchaseOrderID')) + \
              	 " is " + value.get('PurchaseOrderLifeCycleStatusCodeText')
+        messages.append( {
+              "type": 0,
+              "speech": speech
+            } )
     else:
         speech = "Sorry, I did not understand you! Please try again"
-	
+	    messages.append( {
+              "type": 0,
+              "speech": speech
+            } )
+        
     print("Response:")
     print(speech)
 
