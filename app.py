@@ -62,7 +62,7 @@ def makeQuery(req, baseurl, session):
     action = parameters.get("po-action")
 	
     intent = result.get("action")    
-    if intent == "find-status" or intent == "po-details":
+    if intent == "find-status" or intent == "get-details":
         return "get" , "PurchaseOrderCollection/?%24filter=PurchaseOrderID%20eq%20'" + poid + "'&%24format=json" 
     elif intent == "find-count":
         return "get" , "PurchaseOrderCollection/$count?%24filter=PurchaseOrderLifeCycleStatusCodeText%20eq%20'" + status + "'"
