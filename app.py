@@ -1,9 +1,10 @@
 #!/usr/bin/env python
-import http.client, base64
+import base64
 
 import json
 import os
 import requests
+from datetime import datetime
 
 from flask import Flask
 from flask import request
@@ -17,17 +18,63 @@ def webhook():
     req = request.get_json(silent=True, force=True)
     #print("Request:")
     #print(json.dumps(req, indent=4))
+    result = req.get("result")
+    action_name = result.get("action")
 
-    res = processRequest(req)
+    if action_name == 'record-time':
+        parameters = result.get("parameters")
+        res = record_the_time(req, parameters)
+        res_final = json.dumps(res, indent=4)
+        r = make_response(res_final)
+        r.headers['Content-Type'] = 'application/json'
+        return r
+    else:
+        res = processRequest(req)
+        res = json.dumps(res, indent=4)
+        print("Response:")
+        print(res)
+        r = make_response(res)
+        r.headers['Content-Type'] = 'application/json'
+        return r
 
-    res = json.dumps(res, indent=4)
-    print("Response:")
-    print(res)
-    r = make_response(res)
-    r.headers['Content-Type'] = 'application/json'
-    return r
+def record_the_time(req, parameters):
+    session = requests.Session()
+    # setup header, auth, token for POST
+    baseurl = 'https://my316075.sapbydesign.com/sap/byd/odata/cust/v1/timerecording/'
+    # baseurl = 'https://my316075.sapbydesign.com/sap/byd/odata/cust/v1/timerecording/EmployeeTime1Collection/'
+    session.headers.update({'authorization' : "Basic " + base64.encodestring(('%s:%s' % ("odata_demo", "Welcome01")).encode()).decode().replace('\n', '')})
+    session.headers.update({'x-csrf-token' : 'fetch'})
+    res = session.get(baseurl, data = {'user' :'odata_demo','password' : 'Welcome01'}, proxies = "")
+    session.headers.update({'x-csrf-token' : res.headers.get("x-csrf-token")})
 
+    # build the payload (dictionary object) to be sent to POST
+    base_url_new = baseurl + 'EmployeeTime1Collection/'
+    start_date = parameters.get('date')
+    duration = parameters.get('duration')
+    duration_formatted = "PT{}H0M".format(duration.get('amount')) if duration is not None else "PT1H0M"
+    start_date_formatted = datetime.strptime(start_date, "%Y-%m-%d").isoformat()
+    
+    payload_dict = {
+        "EmployeeTimeAgreementItemUUID":"00000000-0001-1DEF-BAD7-DAE780B5CCCA",
+        "EmployeeTimeItem":[{
+            "ProductID":"S200101",
+            "ProjectElementID":"CPSO49-1",
+            "EndDate": start_date_formatted,
+            "StartDate": start_date_formatted,
+            "Duration": duration_formatted
+        }]
+    }
 
+    payload_str = json.dumps(payload_dict)
+    payload_json = json.loads(payload_str)
+    result = session.post(base_url_new, json=payload_json)
+
+    if result.reason == 'Created':
+        res = makeWebhookResult(None, req)
+    else:
+        res = makeWebhookResult(None, req)
+    return res    
+    
 def processRequest(req):
     session = requests.Session()
 
@@ -162,6 +209,12 @@ def makeWebhookResult(data, req):
               "type": 0,
               "speech": speech
             } )
+    elif intent == "record-time":
+        speech = "Time sheet was updated successfully!"
+        messages.append({
+            "type": 0,
+            "speech": speech
+        })        
     else:
         speech = "Sorry, I did not understand you! Please try again"
         messages.append( {
