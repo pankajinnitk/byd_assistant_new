@@ -117,8 +117,8 @@ def makeQuery(req, baseurl, session):
         if date:
             return "get" , "PurchaseOrderCollection/$%24format=json&%24filter=CreationDateTime%20ge%20datetimeoffset'" + date + "'"
         else:
-            return "get" , "PurchaseOrderCollection/$%24format=json&%24filter=CreationDateTime%20ge%20datetimeoffset'" + \
-            start_date + "'%20and%20CreationDateTime%20le%20datetimeoffset'" + end_date + "'"
+            return "get" , "PurchaseOrderCollection/?%24format=json&%24filter=CreationDateTime%20ge%20datetimeoffset'" + \
+            start_date + "T00%3A00%3A00Z'%20and%20CreationDateTime%20le%20datetimeoffset'" + end_date + "T00%3A00%3A00Z'"
     elif intent == "po-action":
         qry_url = baseurl + "PurchaseOrderCollection/?%24filter=PurchaseOrderID%20eq%20'" + poid + "'&%24format=json" 
         print(qry_url)
@@ -192,14 +192,18 @@ def makeWebhookResult(data, req):
         value = data.get('d').get('results')
         items = []
         i = 0
-        while i <= 5:
+        if len(value) <= 5:
+            j = len(value)
+        else:
+            j = 5
+        while i < j:
             items.append(
                 {
                     "optionInfo": {
                     "key": "PO",
                     "synonyms": ["PO"]
                     },
-                    "title": value[i].get('PurchaseOrderID'),
+                    "title": "PO ID: " + value[i].get('PurchaseOrderID'),
                     "description": value[i].get('PurchaseOrderLifeCycleStatusCodeText')
                 })
             i += 1
