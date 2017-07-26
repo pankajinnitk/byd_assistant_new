@@ -20,7 +20,7 @@ def webhook():
     #print(json.dumps(req, indent=4))
     result = req.get("result")
     action_name = result.get("action")
-
+    print("action:", action_name)
     if action_name == 'record-time':
         parameters = result.get("parameters")
         res = record_the_time(req, parameters)
@@ -45,13 +45,14 @@ def record_the_time(req, parameters):
     session.headers.update({'authorization' : "Basic " + base64.encodestring(('%s:%s' % ("odata_demo", "Welcome01")).encode()).decode().replace('\n', '')})
     session.headers.update({'x-csrf-token' : 'fetch'})
     res = session.get(baseurl, data = {'user' :'odata_demo','password' : 'Welcome01'}, proxies = "")
+    print(session)
     session.headers.update({'x-csrf-token' : res.headers.get("x-csrf-token")})
 
     # build the payload (dictionary object) to be sent to POST
     base_url_new = baseurl + 'EmployeeTime1Collection/'
     start_date = parameters.get('date')
     duration = parameters.get('duration')
-    duration_formatted = "PT{}H0M".format(duration.get('amount')) if duration is not None else "PT1H0M"
+    duration_formatted = "PT{}H0M".format(duration.get('amount')) #if duration is not None else "PT1H0M"
     start_date_formatted = datetime.strptime(start_date, "%Y-%m-%d").isoformat()
     
     payload_dict = {
