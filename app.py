@@ -67,8 +67,9 @@ def record_the_time(req, parameters):
 
     payload_str = json.dumps(payload_dict)
     payload_json = json.loads(payload_str)
+    print("payload: ", payload_json)
     result = session.post(base_url_new, json=payload_json)
-
+    print(result.reason)
     if result.reason == 'Created':
         res = makeWebhookResult(None, req)
     else:
