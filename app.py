@@ -150,10 +150,7 @@ def makeWebhookResult(data, req):
     elif intent == "get-details":		
         value = data.get('d').get('results')
         speech = "Here are the details"
-        messages.append( {
-                "type": "list_card",
-                "platform": "google",
-                "title": "Details of PO " + value[0].get('PurchaseOrderID'),
+        messages.append( {                                             
                 "items": [
                 {
                     "optionInfo": {
@@ -179,7 +176,10 @@ def makeWebhookResult(data, req):
                     "title": "Buyer Party",
                     "description": value[0].get('BuyerPartyID')
                 }
-                ]
+                ],
+                "title": "Details of PO " + value[0].get('PurchaseOrderID'),
+                "platform": "google",
+                "type": "list_card"
             } )
         messages.append( {
               "type": 0,
