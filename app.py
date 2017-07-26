@@ -16,8 +16,6 @@ app = Flask(__name__)
 @app.route('/webhook', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
-    print("Request:")
-    print(json.dumps(req, indent=4))
     result = req.get("result")
     action_name = result.get("action")
     print("action:", action_name)
@@ -45,7 +43,6 @@ def record_the_time(req, parameters):
     session.headers.update({'authorization' : "Basic " + base64.encodestring(('%s:%s' % ("odata_demo", "Welcome01")).encode()).decode().replace('\n', '')})
     session.headers.update({'x-csrf-token' : 'fetch'})
     res = session.get(baseurl, data = {'user' :'odata_demo','password' : 'Welcome01'}, proxies = "")
-    print(session)
     session.headers.update({'x-csrf-token' : res.headers.get("x-csrf-token")})
 
     # build the payload (dictionary object) to be sent to POST
@@ -68,9 +65,7 @@ def record_the_time(req, parameters):
 
     payload_str = json.dumps(payload_dict)
     payload_json = json.loads(payload_str)
-    print("payload: ", payload_json)
     result = session.post(base_url_new, json=payload_json)
-    print(result.reason)
     if result.reason == 'Created':
         res = makeWebhookResult(None, req)
     else:
@@ -85,7 +80,6 @@ def processRequest(req):
     session.headers.update({'x-csrf-token' : 'fetch'})
     print(session)
     res = session.get(baseurl, data = {'user' :'odata_demo','password' : 'Welcome01'}, proxies = "")
-    print(res)
     session.headers.update({'x-csrf-token' : res.headers.get("x-csrf-token")})
 
     method, query = makeQuery(req, baseurl, session)
