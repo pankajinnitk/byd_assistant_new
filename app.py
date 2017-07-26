@@ -209,11 +209,11 @@ def makeWebhookResult(data, req):
             i += 1
         
         speech = "Here are the requested details"
-        messages.append( {
-                "type": "list_card",
+        messages.append( {                                             
+                "items": items,
+                "title": "List of POs",
                 "platform": "google",
-                "title": "List of Purchase Orders",
-                "items": items
+                "type": "list_card"
             } )
         
         messages.append( {
