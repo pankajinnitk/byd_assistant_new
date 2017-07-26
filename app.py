@@ -103,12 +103,22 @@ def makeQuery(req, baseurl, session):
     poid = parameters.get("id")
     status = parameters.get("status")
     action = parameters.get("po-action")
+    dateduration = parameters.get("date-period").split("/")
+    start_date = dateduration[0]
+    end_date = dateduration[1]
+    date = parameters.get("date")
 	
     intent = result.get("action")    
     if intent == "find-status" or intent == "get-details":
         return "get" , "PurchaseOrderCollection/?%24filter=PurchaseOrderID%20eq%20'" + poid + "'&%24format=json" 
     elif intent == "find-count":
         return "get" , "PurchaseOrderCollection/$count?%24filter=PurchaseOrderLifeCycleStatusCodeText%20eq%20'" + status + "'"
+    elif intent == "get-pos":
+        if date:
+            return "get" , "PurchaseOrderCollection/$%24format=json&%24filter=CreationDateTime%20ge%20datetimeoffset'" + date + "'"
+        else:
+            return "get" , "PurchaseOrderCollection/$%24format=json&%24filter=CreationDateTime%20ge%20datetimeoffset'" + \
+            start_date + "'%20and%20CreationDateTime%20le%20datetimeoffset'" + end_date + "'"
     elif intent == "po-action":
         qry_url = baseurl + "PurchaseOrderCollection/?%24filter=PurchaseOrderID%20eq%20'" + poid + "'&%24format=json" 
         print(qry_url)
@@ -139,10 +149,6 @@ def makeWebhookResult(data, req):
 
     elif intent == "get-details":		
         value = data.get('d').get('results')
-        node_id = value[0].get('ObjectID')
-        print(node_id)
-        print("json.results: ")
-        print(json.dumps(value, indent=4))
         speech = "Here are the details"
         messages.append( {
                 "type": "list_card",
@@ -163,7 +169,7 @@ def makeWebhookResult(data, req):
                     "synonyms": ["Value"]
                     },
                     "title": "Net Value",
-                    "description": value[0].get('TotalNetAmount') + value[0].get('CurrencyCodeText')
+                    "description": "%.2f" % value[0].get('TotalNetAmount') + " " + value[0].get('CurrencyCodeText')
                 },
                 {
                     "optionInfo": {
@@ -182,6 +188,37 @@ def makeWebhookResult(data, req):
                          "Buyer Party is " + value[0].get('BuyerPartyID') + "."
             } )
             
+    elif intent == "get-pos":
+        value = data.get('d').get('results')
+        items = []
+        i = 0
+        while i <= 5:
+            items.append(
+                {
+                    "optionInfo": {
+                    "key": "PO",
+                    "synonyms": ["PO"]
+                    },
+                    "title": value[i].get('PurchaseOrderID'),
+                    "description": value[i].get('PurchaseOrderLifeCycleStatusCodeText')
+                })
+            i += 1
+        
+        speech = "Here are the requested details"
+        messages.append( {
+                "type": "list_card",
+                "platform": "google",
+                "title": "List of Purchase Orders",
+                "items": items
+            } )
+        
+        messages.append( {
+              "type": 0,
+              "speech": "Supplier of PO " + value[0].get('PurchaseOrderID') + " is " +  value[0].get('SellerPartyID') + ". " + \
+                         "Total Net Value is " + value[0].get('TotalNetAmount') + " " + value[0].get('CurrencyCodeText') + ". " + \
+                         "Buyer Party is " + value[0].get('BuyerPartyID') + "."
+            } )
+    
     elif intent == "find-count":
         if int(data) > 1:
             speech = "There are " + str(data) + " purchase orders in the system with " + \
