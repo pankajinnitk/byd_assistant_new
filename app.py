@@ -102,11 +102,7 @@ def makeQuery(req, baseurl, session):
     parameters = result.get("parameters")
     poid = parameters.get("id")
     status = parameters.get("status")
-    action = parameters.get("po-action")
-    dateduration = parameters.get("date-period").split("/")
-    start_date = dateduration[0]
-    end_date = dateduration[1]
-    date = parameters.get("date")
+    action = parameters.get("po-action")    
 	
     intent = result.get("action")    
     if intent == "find-status" or intent == "get-details":
@@ -114,6 +110,10 @@ def makeQuery(req, baseurl, session):
     elif intent == "find-count":
         return "get" , "PurchaseOrderCollection/$count?%24filter=PurchaseOrderLifeCycleStatusCodeText%20eq%20'" + status + "'"
     elif intent == "get-pos":
+        dateduration = parameters.get("date-period").split("/")
+        start_date = dateduration[0]
+        end_date = dateduration[1]
+        date = parameters.get("date")
         if date:
             return "get" , "PurchaseOrderCollection/$%24format=json&%24filter=CreationDateTime%20ge%20datetimeoffset'" + date + "'"
         else:
@@ -169,7 +169,7 @@ def makeWebhookResult(data, req):
                     "synonyms": ["Value"]
                     },
                     "title": "Net Value",
-                    "description": "%.2f" % value[0].get('TotalNetAmount') + " " + value[0].get('CurrencyCodeText')
+                    "description": "%.2f" % float(value[0].get('TotalNetAmount')) + " " + value[0].get('CurrencyCodeText')
                 },
                 {
                     "optionInfo": {
