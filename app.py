@@ -102,7 +102,7 @@ def makeQuery(req, baseurl, session):
     parameters = result.get("parameters")
     poid = parameters.get("id")
     status = parameters.get("status")
-    action = parameters.get("po-action")    
+    action = parameters.get("po-action")[0]    
 	
     intent = result.get("action")    
     if intent == "find-status" or intent == "get-details":
