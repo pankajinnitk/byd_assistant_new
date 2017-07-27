@@ -80,6 +80,7 @@ def processRequest(req):
     session.headers.update({'x-csrf-token' : 'fetch'})
     print(session)
     res = session.get(baseurl, data = {'user' :'odata_demo','password' : 'Welcome01'}, proxies = "")
+    print(res)
     session.headers.update({'x-csrf-token' : res.headers.get("x-csrf-token")})
 
     method, query = makeQuery(req, baseurl, session)
@@ -102,7 +103,7 @@ def makeQuery(req, baseurl, session):
     parameters = result.get("parameters")
     poid = parameters.get("id")
     status = parameters.get("status")
-    action = parameters.get("po-action")[0]    
+    action = parameters.get("po-action")
 	
     intent = result.get("action")    
     if intent == "find-status" or intent == "get-details":
@@ -127,7 +128,7 @@ def makeQuery(req, baseurl, session):
         print(result)
         data = json.loads(result)
         node_id = data.get('d').get('results')[0].get('ObjectID')
-        return "post" , action + "?" + "ObjectID='" + node_id +"'" + "'&%24format=json"
+        return "post" , action[0] + "?" + "ObjectID='" + node_id +"'" + "'&%24format=json"
     else:
         return {}
 	
