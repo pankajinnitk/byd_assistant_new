@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import base64
-
+import analytics
 import json
 import os
 import requests
-from datetime import datetime
 
+from datetime import datetime
 from flask import Flask
 from flask import request
 from flask import make_response
@@ -25,6 +25,9 @@ def webhook():
         res_final = json.dumps(res, indent=4)
         r = make_response(res_final)
         r.headers['Content-Type'] = 'application/json'
+        return r
+    elif action_name == 'analytics':
+        r = analytics.run(req)
         return r
     else:
         res = processRequest(req)
