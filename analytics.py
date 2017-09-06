@@ -11,8 +11,7 @@ from flask import make_response
 def run(req):
     res = processRequest(req)
     res = json.dumps(res, indent=4)
-    print("Response:")
-    print(res)
+
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
     return r
@@ -21,16 +20,10 @@ def processRequest(req):
     session = requests.Session()
 
     baseurl = "https://my316075.sapbydesign.com/sap/byd/odata/cc_home_analytics.svc/"
-    session.headers.update({'authorization' : "Basic " + base64.encodestring(('%s:%s' % ("administration01", "Welcome1")).encode()).decode().replace('\n', '')})
-    session.headers.update({'x-csrf-token' : 'fetch'})
-    print(session)
-    res = session.get(baseurl, data = {'user' :'administration01','password' : 'Welcome1'}, proxies = "")
-    print(res)
-    session.headers.update({'x-csrf-token' : res.headers.get("x-csrf-token")})
+    session.headers.update({'authorization' : "Basic " + base64.encodestring(('%s:%s' % ("administration01", "Welcome1")).encode()).decode().replace('\n', '')})    
 
     method, query = makeQuery(req, baseurl, session)
     qry_url = baseurl + query
-    print(qry_url)
         
     if method == 'get':
         result = session.get(qry_url)
@@ -38,8 +31,6 @@ def processRequest(req):
         result = session.post(qry_url)
     
     data = json.loads(result.text)
-    print("data")
-    print(data)
     res = makeWebhookResult(data, req)
     return res	
 
@@ -52,7 +43,7 @@ def makeQuery(req, baseurl, session):
         filter_ids = parameters.get("analytics-entities")
         values = parameters.get("entity-value")
         reportid = parameters.get("report-id")
-        odataparse.parseXML(reportid)
+        #odataparse.parseXML(reportid)
         select_a = parameters.get("select-param-entities")
         select = ",".join(select_a)
         filters = ""
@@ -95,7 +86,7 @@ def makeWebhookResult(data, req):
                     "key": "EVA",
                     "synonyms": ["EVA"]
                     },
-                    "title": odataparse.get_prop_name(select[i]),
+                    "title": "Test",#odataparse.get_prop_name(select[i]),
                     "description": desc
                 })
             i += 1
@@ -103,7 +94,7 @@ def makeWebhookResult(data, req):
         speech = "Here are the requested details"
         messages.append( {                                             
                 "items": items,
-                "title": odataparse.get_report_name(),
+                "title": "Test",#odataparse.get_report_name(),
                 "platform": "google",
                 "type": "list_card"
             } )
@@ -111,8 +102,13 @@ def makeWebhookResult(data, req):
         i = 0
         j = len(select)
         while i < j:
-            text = odataparse.get_prop_name(select[i]) + ' - ' + value[0].get(select[i]) + "."
-            default = ''.join(text)
+            if odataparse.is_decimal(select[i]):
+                desc = odataparse.get_prop_name(select[i]) + ' - ' + "%.2f" % float(value[0].get(select[i])) + " USD"
+            else:
+                #desc = odataparse.get_prop_name(select[i]) + ' - ' + value[0].get(select[i])
+                desc = value[0].get(select[i])
+            
+            default = ''.join(desc)
             i += 1
 
         messages.append( {
@@ -126,9 +122,6 @@ def makeWebhookResult(data, req):
               "type": 0,
               "speech": speech
             } )
-    
-    print("Response:")
-    print(speech)
 
     return {
         "speech": speech,
