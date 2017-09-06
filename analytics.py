@@ -94,7 +94,7 @@ def makeWebhookResult(data, req):
         speech = "Here are the requested details"
         messages.append( {                                             
                 "items": items,
-                "title": odataparse.get_report_name(),
+                "title": "Test,"#odataparse.get_report_name(),
                 "platform": "google",
                 "type": "list_card"
             } )
