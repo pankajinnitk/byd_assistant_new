@@ -18,7 +18,6 @@ def webhook():
     req = request.get_json(silent=True, force=True)
     result = req.get("result")
     action_name = result.get("action")
-    print("action:", action_name)
     if action_name == 'record-time':
         parameters = result.get("parameters")
         res = record_the_time(req, parameters)
@@ -32,8 +31,6 @@ def webhook():
     else:
         res = processRequest(req)
         res = json.dumps(res, indent=4)
-        print("Response:")
-        print(res)
         r = make_response(res)
         r.headers['Content-Type'] = 'application/json'
         return r
