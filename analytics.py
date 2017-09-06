@@ -43,7 +43,7 @@ def makeQuery(req, baseurl, session):
         filter_ids = parameters.get("analytics-entities")
         values = parameters.get("entity-value")
         reportid = parameters.get("report-id")
-        #odataparse.parseXML(reportid)
+        odataparse.parseXML(reportid)
         select_a = parameters.get("select-param-entities")
         select = ",".join(select_a)
         filters = ""
@@ -86,7 +86,7 @@ def makeWebhookResult(data, req):
                     "key": "EVA",
                     "synonyms": ["EVA"]
                     },
-                    "title": "Test",#odataparse.get_prop_name(select[i]),
+                    "title": odataparse.get_prop_name(select[i]),
                     "description": desc
                 })
             i += 1
@@ -94,7 +94,7 @@ def makeWebhookResult(data, req):
         speech = "Here are the requested details"
         messages.append( {                                             
                 "items": items,
-                "title": "Test",#odataparse.get_report_name(),
+                "title": odataparse.get_report_name(),
                 "platform": "google",
                 "type": "list_card"
             } )
@@ -105,8 +105,7 @@ def makeWebhookResult(data, req):
             if odataparse.is_decimal(select[i]):
                 desc = odataparse.get_prop_name(select[i]) + ' - ' + "%.2f" % float(value[0].get(select[i])) + " USD"
             else:
-                #desc = odataparse.get_prop_name(select[i]) + ' - ' + value[0].get(select[i])
-                desc = value[0].get(select[i])
+                desc = odataparse.get_prop_name(select[i]) + ' - ' + value[0].get(select[i])
             
             default = ''.join(desc)
             i += 1
